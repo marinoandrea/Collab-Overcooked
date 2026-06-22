@@ -1,4 +1,4 @@
-import gym
+import gymnasium as gym
 import tqdm
 import numpy as np
 from overcooked_ai_py.utils import mean_and_std_err

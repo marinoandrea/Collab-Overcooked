@@ -11,6 +11,6 @@ setup(name='overcooked_ai',
       install_requires=[
         'numpy',
         'tqdm',
-        'gym'
+        'gymnasium'
       ]
     )

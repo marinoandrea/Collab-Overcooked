@@ -1,21 +1,13 @@
-openai==1.54.3
-blobfile
-fairscale
-pandas # with default numpy==1.21.6
-scipy #==1.5.2
-matplotlib #==3.0.3
-seaborn==0.9.0
-protobuf==3.20.3
-rich==13.5.2
-fire
-tiktoken
-transformers
-dtw-python
-sentencepiece
-scikit-learn
-plotly
-aiohttp
-gym
-httpx==0.27.2
-websocket
-websockets
+# OpenAI-only, GPU-free, latest-Python (>=3.13) runtime for Collab-Overcooked.
+# Replaces the upstream torch/transformers/conda/mpi4py stack. PyPI only — no mirrors.
+# Lower bounds pick the first wheels supporting Python 3.13; exact versions are
+# captured by the harness lock / run manifest.
+openai>=1.50
+numpy>=2.1
+scipy>=1.14
+gymnasium>=1.0
+tiktoken>=0.8
+rich>=13
+tqdm>=4.66
+importlib-metadata>=8
+setuptools>=75

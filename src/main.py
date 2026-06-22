@@ -18,11 +18,9 @@ warnings.filterwarnings("ignore", category=FutureWarning)
 warnings.filterwarnings("ignore", category=UserWarning)
 warnings.filterwarnings("ignore", message=".*cuBLAS factory.*")  # ignore "Unable to register cuBLAS factory" due to use tf-CPU
 
-from distutils.util import strtobool
-
-def boolean_argument(value):
-    """Convert a string value to boolean."""
-    return bool(strtobool(value))
+def boolean_argument(value: str) -> bool:
+    """String to boolean (distutils.strtobool replacement; distutils is gone in 3.12+)."""
+    return str(value).strip().lower() in {"1", "true", "t", "yes", "y", "on"}
 
 def check_recipe_parse(variant):
     recipe_name_list = os.listdir(PROMPT_DIR+'/recipe/') 
@@ -48,7 +46,6 @@ from overcooked_ai_py.mdp.overcooked_env import OvercookedEnv
 from overcooked_ai_py.agents.agent import AgentGroup
 from overcooked_ai_py.mdp.actions import Action
 from collab.modules import statistics_dict, tokenizer,model, turn_statistics_dict
-from collab.web_util import output_to_port, check_port_in_use, change_port
 import socket
 from utils import make_agent, get_example_embedding, combine_statistic_dict
 
@@ -131,9 +128,6 @@ def main(variant):
                 if mode == "OpenSource":
                     assert os.path.exists(variant['model_dirname']) is True, print(f"you should input right open-source model absolute path")
                 print(f"\n----Use {variant['gpt_model']}----\n")
-                if variant['gpt_model'] == "human":
-                    assert check_port_in_use(variant["local_server_api"]) is True,print(f"port {variant['local_server_api']} is busy")
-                    change_port(variant["local_server_api"])
                 gpt_model = variant['gpt_model']
                 model_dirname = variant['model_dirname']
                 local_server_api = variant['local_server_api']
@@ -204,15 +198,7 @@ def main(variant):
                 if variant['test_mode'] == 'fix_task':
                     if reward != 0:
                         print("Task successed!")
-                        #Human-eval: set task success message
-                        if variant['gpt_model'] == "human":
-                            for a in range(len(team.agents)):
-                                output_to_port(f"agent{a}","Success!",mission="success",port=variant['local_server_api'])
                         break
-            #Human-eval: set task failed message
-            if variant['gpt_model'] == "human":
-                for a in range(len(team.agents)):
-                    output_to_port(f"agent{a}","Fail to finish task in time!",mission="fail",port=variant['local_server_api'])
         print(f"Episode {i+1}/{episode}: {r_total}\n====\n\n")
         results.append(r_total)
    
