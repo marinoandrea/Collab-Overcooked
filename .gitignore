@@ -163,3 +163,6 @@ src/batch_run.sh
 src/embedding_cache.json
 
 
+
+# Local API key, never commit
+src/openai_key.txt
