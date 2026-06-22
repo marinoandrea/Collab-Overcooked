@@ -38,7 +38,7 @@ def check_recipe_parse(variant):
 import importlib_metadata
 VERSION = importlib_metadata.version("overcooked_ai")
 cwd = os.getcwd()
-PROMPT_DIR = os.path.join(cwd, "prompts")
+PROMPT_DIR = os.environ.get("COLLAB_RECON_PROMPT_DIR") or os.path.join(cwd, "prompts")
 print(f'\n----This overcook version is {VERSION}----\n')
 
 from overcooked_ai_py.mdp.overcooked_mdp import OvercookedGridworld, OvercookedState

@@ -22,6 +22,14 @@ the recipes, and the Referential Action Trajectories are unchanged.
   servers) and the `pandas` / `scipy.spatial` usage.
 - API key read from `$OPENAI_API_KEY` (falls back to `openai_key.txt` if present).
 
+## Prompt directory override — `src/main.py`, `src/collab/collab.py`
+- `PROMPT_DIR` now reads `$COLLAB_RECON_PROMPT_DIR` first, falling back to the
+  built-in `cwd/prompts`. This lets the harness point an episode at a run-local
+  prompts directory (with per-configuration `gpt/{chef,assistant}_skill.txt`
+  rendered from the experiment config) without mutating the tracked prompt files.
+  Mirrors the env-based model routing seam; behaviour is unchanged when the
+  variable is unset.
+
 ## Human/web interface removed
 - Deleted `src/collab/web_util.py` and `src/service.py`; removed the `human`
   branches and the `web_util` import from `src/main.py`. Drops `websockets`,

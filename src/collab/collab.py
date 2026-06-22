@@ -21,7 +21,7 @@ from collab.modules import if_two_sentence_similar_meaning
 
 cwd = os.getcwd()
 openai_key_file = os.path.join(cwd, "openai_key.txt")
-PROMPT_DIR = os.path.join(cwd, "prompts")
+PROMPT_DIR = os.environ.get("COLLAB_RECON_PROMPT_DIR") or os.path.join(cwd, "prompts")
 
 NAME_TO_ACTION = {
     "NORTH": Direction.NORTH,
