@@ -2,7 +2,7 @@ import itertools, os, json, re
 from collections import defaultdict
 from typing import Union
 import numpy as np
-import pkg_resources
+from importlib.metadata import version as _overcooked_version
 from collections import deque
 import sys
 import copy
@@ -679,10 +679,10 @@ class LLMAgents(LLMPair):
             lis_actions = self.mdp.get_valid_actions(state.players[self.agent_index])
             # chosen_action =lis_actions[np.random.randint(0,len(lis_actions))]
             chosen_action = (0, 0)
-            if pkg_resources.get_distribution("overcooked_ai").version == "1.1.0":
+            if _overcooked_version("overcooked_ai") == "1.1.0":
                 self.prev_state = state
                 return chosen_action, {}
-            elif pkg_resources.get_distribution("overcooked_ai").version == "0.0.1":
+            elif _overcooked_version("overcooked_ai") == "0.0.1":
                 self.prev_state = state
                 return chosen_action, ""
         else:
@@ -717,14 +717,14 @@ class LLMAgents(LLMPair):
                         Action.INTERACT,
                     ]:
                         if (
-                            pkg_resources.get_distribution("overcooked_ai").version
+                            _overcooked_version("overcooked_ai")
                             == "1.1.0"
                         ):
                             new_state, _ = self.mlam.mdp.get_state_transition(
                                 state, j_a
                             )
                         elif (
-                            pkg_resources.get_distribution("overcooked_ai").version
+                            _overcooked_version("overcooked_ai")
                             == "0.0.1"
                         ):
                             new_state, _, _ = self.mlam.mdp.get_state_transition(
@@ -751,9 +751,9 @@ class LLMAgents(LLMPair):
 
         # print(f'ml_action = {self.current_ml_action}')
         # print(f'P{self.agent_index} : {Action.to_char(chosen_action)}')
-        if pkg_resources.get_distribution("overcooked_ai").version == "1.1.0":
+        if _overcooked_version("overcooked_ai") == "1.1.0":
             return chosen_action, {}
-        elif pkg_resources.get_distribution("overcooked_ai").version == "0.0.1":
+        elif _overcooked_version("overcooked_ai") == "0.0.1":
             if "pickup" in self.current_ml_action:
                 return chosen_action, self.parse_action_params[0]
             elif any(s in self.current_ml_action for s in self.mdp.interact_actions):
@@ -2015,7 +2015,7 @@ class LLMAgents(LLMPair):
         Chooses motion goal that has the lowest cost action plan.
         Returns the motion goal itself and the first action on the plan.
         """
-        min_cost = np.Inf
+        min_cost = np.inf
         best_action, best_goal = None, None
         for goal in motion_goals:
             action_plan, _, plan_cost = self.mlam.motion_planner.get_plan(
@@ -2034,7 +2034,7 @@ class LLMAgents(LLMPair):
         Chooses motion goal that has the lowest cost action plan.
         Returns the motion goal itself and the first action on the plan.
         """
-        min_cost = np.Inf
+        min_cost = np.inf
         best_action, best_goal = None, None
         for goal in motion_goals:
             action_plan, plan_cost = self.real_time_planner(

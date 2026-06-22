@@ -12,7 +12,6 @@ from overcooked_ai_py.utils import load_dict_from_file, load_pickle
 from collab.collab import LLMAgents
 
 from collections import defaultdict
-from collab.modules import EMBEDDING_MODEL
 
 
 def make_agent(alg: str, mdp, layout, **gptargs):
@@ -57,61 +56,10 @@ def make_agent(alg: str, mdp, layout, **gptargs):
     return agent
 
 
-# make the example into embedding for retrieval
+# Example-retrieval embedding precompute is disabled in the OpenAI-only fork
+# (no embeddings endpoint dependency). Kept as a stub for import compatibility.
 def get_example_embedding(example_path, save_path=""):
-    input = ""
-    import openai
-    import os
-    import pandas as pd
-
-    key = ""
-    del_index = []
-    cwd = os.getcwd()
-    key_file = os.path.join(cwd, "openai_key.txt")
-    with open(key_file, "r") as f:
-        key = f.read()
-    openai.api_key = key
-
-    with open(example_path, "r") as f:
-        input = f.read()
-        if input[0] == "\n":
-            input = input[1:]
-        input = input.split("</example>")
-        for index, l in enumerate(input):
-            input[index] = input[index].strip("\n\n")
-            input[index] = input[index].strip("<example>")
-            if input[index] == "":
-                del_index.append(index)
-
-    for index in sorted(del_index, reverse=True):
-        del input[index]
-    BATCH_SIZE = 10  # you can submit up to 2048 embedding inputs per request
-
-    embeddings = []
-    for batch_start in range(0, len(input), BATCH_SIZE):
-        batch_end = min(batch_start + BATCH_SIZE, len(input))
-        batch = input[batch_start:batch_end]
-        # Only use the content before "[OUTPUT]" for embedding
-        batch = list(
-            map(lambda x: x[: x.index("[OUTPUT]")] if "[OUTPUT]" in x else x, batch)
-        )
-        print(f"Batch {batch_start} to {batch_end-1}")
-        response = openai.Embedding.create(model=EMBEDDING_MODEL, input=batch)
-        for i, be in enumerate(response.data):
-            assert i == be.index  # double check embeddings are in same order as input
-        batch_embeddings = [e.embedding for e in response.data]
-        embeddings.extend(batch_embeddings)
-    df = pd.DataFrame({"text": input, "embedding": embeddings})
-
-    # save embedding
-    if save_path == "":
-        save_path = (
-            f"/home/zsw/Overcooked-Agents/src/data/embedding_"
-            + ("chef" if "chef" in example_path else "assistant")
-            + ".csv"
-        )
-    df.to_csv(save_path, index=False)
-    print(f"Successfully save embedding lib in {save_path}")
+    raise NotImplementedError("example retrieval is disabled in this fork")
 
 
 def combine_statistic_dict(dict1, dict2, map, score):
