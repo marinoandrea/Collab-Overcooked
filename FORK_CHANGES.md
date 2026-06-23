@@ -50,3 +50,21 @@ the recipes, and the Referential Action Trajectories are unchanged.
   networkx, sympy, pandas.
 - Deleted `lib/overcooked_ai/environment.yml` (Tsinghua mirrors, conda) and the
   broken root `dockerfile`. No conda, no mirrors anywhere.
+
+## Bug fixes — `src/collab/collab.py` (behaviour-faithful)
+
+Pre-existing defects in the plan->action parsing, fixed without changing the
+intended semantics (the no-communication path is unchanged except for the dropped
+phantom action):
+
+- `generate_ml_action`: `ml_action == "wait(1)"` was a `==` comparison (a no-op)
+  instead of an assignment `=` in the "no plan, no communication" fallback. The
+  downstream `if ml_action == "": ...` re-parse masked it, so the outcome was
+  unchanged, but the statement was dead.
+- `parse_ml_action_top`: the follow-on action queue was built from the *unfiltered*
+  split list with `index > 0`. When a `request/accept/deny/clarify` segment preceded
+  the chosen action, that action sits at index > 0 and was **re-queued**, so it
+  executed twice (once as `ml_action`, once from the queue). The queue now starts
+  after the chosen action's index. Empty segments (the trailing `""` from
+  `plan.split(";")` on a plan ending in `;`) are also skipped, removing a phantom
+  wait step from the queue.

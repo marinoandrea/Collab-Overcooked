@@ -1545,7 +1545,7 @@ class LLMAgents(LLMPair):
                 ml_action = self.parse_ml_action_top(plan, True)
             else:
                 # No plan and no communication content, wait
-                ml_action == "wait(1)"
+                ml_action = "wait(1)"
         else:
             temp_list = []
             while not self.action_wait_parse.empty():
@@ -1593,20 +1593,26 @@ class LLMAgents(LLMPair):
         ml_action_list = action_list
 
         ml_action = ""
-        for i in ml_action_list:
+        ml_index = 0
+        for index, i in enumerate(ml_action_list):
             if any(s in i for s in ["request", "accept", "deny", "clarify"]):
                 continue
             else:
                 ml_action = i
+                ml_index = index
                 break
         if ml_action == "":
             ml_action = "wait(1)"
             ml_action_list = ["wait(1)"]
+            ml_index = 0
         if add_to_queue:
             while not self.action_wait_parse.empty():
                 self.action_wait_parse.get()
-            for index, a in enumerate(ml_action_list):
-                if index > 0:
+            # Queue the actions that follow the chosen one. Start after ml_index (not
+            # index 0) so a leading request/accept/... no longer re-queues ml_action
+            # itself, and skip empty segments (the trailing "" from split(";")).
+            for a in ml_action_list[ml_index + 1 :]:
+                if a.strip():
                     self.action_wait_parse.put(a)
             if "wait" in ml_action:
                 self.time_to_wait = self.parse_wait_string(ml_action)
